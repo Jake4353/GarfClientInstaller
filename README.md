@@ -5,7 +5,7 @@
 A Working Garfield Kart Hack Client
 
 Works on both Online and Single-player games
-
+## Installer in progress
 # Supported Hacks
   - [x] Speed
     - [ ] Kart Speed

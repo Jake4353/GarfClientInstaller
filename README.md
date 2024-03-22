@@ -5,7 +5,7 @@
 A Working Garfield Kart Hack Client
 
 Works on both Online and Single-player games
-## Installer in progress
+## Installer (Unfinished)
 ![image](https://github.com/Jake4353/GarfClientInstaller/assets/44424544/8c9a6ebc-3d59-40ea-9a3f-88b98ae91e9a)
 
 # Supported Hacks

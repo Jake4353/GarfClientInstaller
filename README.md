@@ -41,14 +41,10 @@ Works on both Online and Single-player games
 ![image](https://github.com/Jake4353/GarfClientInstaller/assets/44424544/5a961665-a5ba-408e-b4e6-d338b327bc27)
 
 # Furious Racing Installation
-NOTE: The Furious Racing Hack is still a WIP - Watch out for bugs and stuff.
-TODO:
-  - [ ] Unlock all steam achievements button
-  - [ ] Rework movement
-1. Download the [latest](/downloads/latest/furious/Assembly-CSharp.dll) DLL file.
-2. Locate the Assembly-CSharp.dll in your Garfield Kart Folder
-  - `C:\Program Files (x86)\Steam\steamapps\common\Garfield Kart - Furious Racing\Garfield Kart Furious Racing_Data\Managed`
-3. Replace the Assembly-CSharp.dll with the one downloaded in [Step 2](/downloads/latest/furious/Assembly-CSharp.dll).
-4. Have fun!
+## 1 Select your prefered version of the game
+![image](https://github.com/Jake4353/GarfClientInstaller/assets/44424544/fc2b5844-3a05-4a6b-9948-bf9c9a6e8778)
+## 2 make sure the Version and Location are correct, and then press the install button and select your preferred hack version
+![image](https://github.com/Jake4353/GarfClientInstaller/assets/44424544/babde7f7-69ca-416c-ae34-d0ea8ebe2001)
+
 
 https://user-images.githubusercontent.com/28388670/185535383-9564f903-b036-4e56-b2cf-acc0f7dbb37b.mp4

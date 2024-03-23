@@ -5,6 +5,10 @@ from PyQt5.QtWidgets import *
 from winreg import *
 import vdf
 import os 
+import requests
+from threading import Thread
+import time
+import numpy as np
 from win32mica import ApplyMica, MicaTheme, MicaStyle
 # widgets
 from qfluentwidgets import * 
@@ -33,7 +37,7 @@ def load_old_dir(loc=None):
                 if os.stat((f'{path}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll'.replace(r"\\","/"))).st_size == 722432:
                     old_dir = [f'{path}/Garfield_Master7_Data/'.replace(r"\\","/"),True,True]
                 else:
-                    old_dir = [f"{path}\Garfield_Master7.exe",True,False]
+                    old_dir = [f"{path}",True,False]
             elif (os.path.exists(f"{path}\GarfieldKartNoMulti.exe")):
                 old_dir = [f"{path}\GarfieldKartNoMulti.exe",False,False]
     else:pass
@@ -89,6 +93,7 @@ class Window(QDialog):
         self.installbtn.clicked.connect(self.install)
         self.ogback.clicked.connect(lambda:self.stackedwid.setCurrentWidget(self.home))
         self.oldlocchange.clicked.connect(lambda:self.changelocation(ver="Original"))
+        self.oldinstall.clicked.connect(lambda:Thread(target=self.download_old).start())
 
         
     def changelocation(self,ver="Furious racing"):
@@ -104,8 +109,8 @@ class Window(QDialog):
             pass
         elif self.old_radio.isChecked():
             self.stackedwid.setCurrentWidget(self.originalpage)
-            self.oldloc.setText(str(load_old_dir()[0]))
-            if load_old_dir()[1] == False: 
+            self.oldloc.setText(f"{load_old_dir()[0]}\Garfield_Master7.exe")
+            if load_old_dir()[1] == True: 
                 self.oldver.setText(f"Version:     Beta")
                 self.update.setVisible(False)
                 
@@ -115,14 +120,51 @@ class Window(QDialog):
             if load_old_dir()[2] == False:
                 self.oldinstalled.setText(f"Hack installed: False")
                 self.oldinstall.setText("Install")
+                self.wrong.setVisible(False)
+
             else:
                 self.oldinstalled.setText(f"Hack installed: True")
                 self.oldinstall.setText("Uninstall")
-
-
-
-
+                self.wrong.setVisible(True)
         else: exit()
+    def download_old(self):
+        if load_old_dir()[2] == False:
+            if os.path.exists(rf"{os.getcwd()}\old\Assembly-CSharp.dll"):
+                pass
+            else:
+                self.oldinfo.setText("Downloading")
+                url = "https://raw.githubusercontent.com/Jake4353/GarfClientInstaller/main/downloads/latest/original/Assembly-CSharp.dll"
+                r = requests.get(url, stream=True)
+                # Estimates the number of bar updates
+                block_size = 10240
+                file_size = int(r.headers.get('Content-Length', None))
+                num_bars = np.ceil(file_size / (1 * block_size))
+                self.oldprog.setMaximum(int(str(num_bars).split('.')[0]))
+                if os.path.exists(rf"{os.getcwd()}\old"):
+                    pass 
+                else: os.makedirs(rf"{os.getcwd()}\old")
+                with open('old/Assembly-CSharp.dll', 'wb') as f:
+                    for i, chunk in enumerate(r.iter_content(chunk_size=1 * block_size)):
+                        f.write(chunk)
+                        try:
+                            self.oldprog.setValue(i+1)
+                        except:pass
+                        # Add a little sleep so you can see the bar progress
+                        time.sleep(0.05)
+
+            self.oldinfo.setText("installing")
+            self.oldprog.setValue(0)
+            self.oldprog.setMaximum(2)
+            self.oldprog.setValue(1)
+            time.sleep(0.5)
+
+            os.replace(rf"{os.getcwd()}\old\Assembly-CSharp.dll", rf"{load_old_dir()[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll")
+
+            self.oldprog.setValue(2)
+            self.oldinfo.setText("Hack installed")
+            self.oldprog.setValue(0)
+
+        else: self.oldinfo.setText("Hack Already installed.")
 
     def select(self,inputmth=None):
         

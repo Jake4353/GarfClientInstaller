@@ -5,7 +5,7 @@
 A Working Garfield Kart Hack Client
 
 Works on both Online and Single-player games
-## Installer (Unfinished)
+# Installer (Unfinished)
 ![image](https://github.com/Jake4353/GarfClientInstaller/assets/44424544/8c9a6ebc-3d59-40ea-9a3f-88b98ae91e9a)
 
 # Supported Hacks
@@ -33,6 +33,12 @@ Works on both Online and Single-player games
   - `C:\Program Files (x86)\Steam\steamapps\common\Garfield Kart\Garfield_Master7_Data\Managed`
 4. Replace the Assembly-CSharp.dll with the one downloaded in [Step 2](/downloads/latest/original/Assembly-CSharp.dll).
 5. Have fun!
+
+# How to uninstall
+## 1 open properties tab
+ ![image](https://github.com/Jake4353/GarfClientInstaller/assets/44424544/d9448420-f289-42e3-8d7f-3e7b7fa18339)
+## 2 open files tab and press verify integrity of files
+![image](https://github.com/Jake4353/GarfClientInstaller/assets/44424544/5a961665-a5ba-408e-b4e6-d338b327bc27)
 
 # Furious Racing Installation
 NOTE: The Furious Racing Hack is still a WIP - Watch out for bugs and stuff.

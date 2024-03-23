@@ -114,7 +114,7 @@ class Window(QDialog):
     def __init__(self):
         super(Window, self).__init__()
         ApplyMica(self.winId(),MicaTheme.DARK, MicaStyle.DEFAULT)
-        uic.loadUi(r'main.ui', self)
+        uic.loadUi(r'main.xml', self)
         setTheme(Theme.DARK)
         self.menu = RoundMenu(parent=self)
         self.stackedwid.setCurrentWidget(self.home)

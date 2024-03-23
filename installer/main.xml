@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>GarfClientInstaller</class>
+ <widget class="QWidget" name="GarfClientInstaller">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="home">
     <widget class="QFrame" name="frame">
@@ -442,6 +442,148 @@ font: 10pt &quot;Segoe UI Variable&quot;;</string>
      </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page">
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(32, 32, 32);</string>
+    </property>
+    <widget class="ToolButton" name="frback">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>38</width>
+       <height>32</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="LineEdit" name="frloc">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>90</y>
+       <width>411</width>
+       <height>33</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="frinstall_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>170</y>
+       <width>231</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(255, 255, 255, 0);
+font: 10pt &quot;Segoe UI Variable&quot;;
+color:white</string>
+     </property>
+     <property name="text">
+      <string>Hack installed:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="frinfo">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>325</y>
+       <width>151</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);
+font: 10pt &quot;Segoe UI Variable&quot;;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="title_3">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>20</y>
+       <width>271</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(255, 255, 255, 0);
+font: 20pt &quot;Segoe UI Variable&quot;;
+color:white</string>
+     </property>
+     <property name="text">
+      <string>Furious racing installer</string>
+     </property>
+    </widget>
+    <widget class="PrimaryPushButton" name="frinstall">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>270</y>
+       <width>153</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Install</string>
+     </property>
+    </widget>
+    <widget class="ProgressBar" name="frprog">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>350</y>
+       <width>551</width>
+       <height>4</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="PushButton" name="frchange">
+     <property name="geometry">
+      <rect>
+       <x>501</x>
+       <y>90</y>
+       <width>81</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Change</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>100</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(255, 255, 255, 0);
+font: 10pt &quot;Segoe UI Variable&quot;;
+color:white</string>
+     </property>
+     <property name="text">
+      <string>location:</string>
+     </property>
+    </widget>
+    <widget class="ToolButton" name="frrefresh">
+     <property name="geometry">
+      <rect>
+       <x>540</x>
+       <y>20</y>
+       <width>38</width>
+       <height>32</height>
+      </rect>
      </property>
     </widget>
    </widget>

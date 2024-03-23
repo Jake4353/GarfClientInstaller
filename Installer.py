@@ -13,7 +13,6 @@ from win32mica import ApplyMica, MicaTheme, MicaStyle
 # widgets
 from qfluentwidgets import * 
 from qfluentwidgets import FluentIcon as FIF
-from pyqt_frameless_window import FramelessDialog
 # system
 import sys
 import webbrowser

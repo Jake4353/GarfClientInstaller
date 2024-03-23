@@ -2,7 +2,7 @@ import shutil
 from PyQt5 import uic
 from PyQt5.QtCore import QPoint, QEvent,QByteArray,QSize
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QApplication,QDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QApplication,QDialog,QWhatsThis
 from winreg import OpenKey, QueryValueEx, HKEY_LOCAL_MACHINE
 from vdf import load
 from os import stat,getcwd,remove,makedirs
@@ -13,11 +13,44 @@ from time import sleep
 import numpy as np
 from win32mica import ApplyMica, MicaTheme, MicaStyle
 # widgets
-from qfluentwidgets import setTheme, Theme,RoundMenu,Action,MenuAnimationType
+from qfluentwidgets import setTheme, Theme,RoundMenu,Action,MenuAnimationType,TeachingTip,InfoBarIcon,TeachingTipTailPosition
 from qfluentwidgets import FluentIcon as FIF
 # system
 from sys import argv, exit
 from webbrowser import open as open_url
+
+def load_new_dir(loc=None):
+    if loc == None:
+        key = OpenKey(HKEY_LOCAL_MACHINE, r'SOFTWARE\WOW6432Node\Valve\Steam')
+        value = QueryValueEx(key,"InstallPath")
+        steam_dir = str(value).split("'")[1].replace(r"\\","/")
+        if path1.exists(steam_dir):
+            d = load(open(f"{steam_dir}/config/libraryfolders.vdf"))['libraryfolders']
+            for i in range(len(d)):
+                if "1085510" in str(d[f"{i}"]['apps']):
+                    path = f"{d[f'{i}']['path']}\steamapps\common\Garfield Kart - Furious Racing"
+                    break
+                elif path1.exists(f"{d[f'{i}']['path']}steamapps\common\Garfield Kart - Furious Racing"): 
+                    path = f"{d[f'{i}']['path']}\steamapps\common\Garfield Kart - Furious Racing"
+                    break
+                else:
+                    old_dir = None
+
+            if (path1.exists(f"{path}/Garfield Kart Furious Racing.exe")):
+                if stat((f'{path}/Garfield Kart Furious Racing_Data/Managed/Assembly-CSharp.dll'.replace(r"\\","/"))).st_size == 1878016:
+                    old_dir = [path.replace(r"\\","/"),True]
+                elif stat((f'{path}/Garfield Kart Furious Racing_Data/Managed/Assembly-CSharp.dll'.replace(r"\\","/"))).st_size == 1867264:
+                    old_dir = [path.replace(r"\\","/"),False]
+            else:old_dir = None
+    else:
+        if (path1.exists(f"{loc}")):
+            if stat((f'{loc}/Garfield Kart Furious Racing_Data/Managed/Assembly-CSharp.dll'.replace(r"\\","/"))).st_size == 1867264:
+                old_dir = [f'{loc}'.replace(r"\\","/"),False]
+            elif stat((f'{loc}/Garfield Kart Furious Racing_Data/Managed/Assembly-CSharp.dll'.replace(r"\\","/"))).st_size == 1878016:
+                old_dir = [f'{loc}'.replace(r"\\","/"),True]
+        else:old_dir = None
+    return old_dir
+
 
 def load_old_dir(loc=None):
     if loc == None:
@@ -33,6 +66,8 @@ def load_old_dir(loc=None):
                 elif path1.exists(f"{d[f'{i}']['path']}\steamapps\common\Garfield Kart"): 
                     path = f"{d[f'{i}']['path']}\steamapps\common\Garfield Kart"
                     break
+                else:
+                    old_dir = None
 
             if (path1.exists(f"{path}\Garfield_Master7.exe")):
                 if stat((f'{path}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll'.replace(r"\\","/"))).st_size == 722432:
@@ -43,6 +78,7 @@ def load_old_dir(loc=None):
                     old_dir = [f"{path}",True,False,0]
             elif (path1.exists(f"{path}\GarfieldKartNoMulti.exe")):
                 old_dir = [f"{path}\GarfieldKartNoMulti.exe",False,False,0]
+            else:old_dir = None
         return old_dir
     else:
         if path1.exists(loc):
@@ -55,6 +91,7 @@ def load_old_dir(loc=None):
                     old_dir = [f"{loc}",True,False,0]
             elif (path1.exists(f"{loc}\GarfieldKartNoMulti.exe")):
                 old_dir = [f"{loc}\GarfieldKartNoMulti.exe",False,False,0]
+            else:old_dir = None
             return old_dir
 
 
@@ -81,6 +118,7 @@ class Window(QDialog):
         setTheme(Theme.DARK)
         self.menu = RoundMenu(parent=self)
         self.stackedwid.setCurrentWidget(self.home)
+        self.setWindowTitle("GarfClientInstaller")
 
         self.menu.addAction(Action(FIF.APPLICATION, 'About',triggered=lambda:open_url("https://github.com/Jake4353/GarfClientInstaller/blob/main/README.md#garfclient-v20")))
         self.menu.addAction(Action(FIF.HELP, 'Help',triggered=lambda:open_url("https://discord.gg/KTJNHyAh2e")))
@@ -96,8 +134,11 @@ class Window(QDialog):
         self.new_btn.setIconSize(QSize(218,131))
         self.ogback.setIcon(FIF.LEFT_ARROW)
         self.oldrefresh.setIcon(FIF.SYNC)
+        self.frback.setIcon(FIF.LEFT_ARROW)
+        self.frrefresh.setIcon(FIF.SYNC)
 
         self.oldrefresh.clicked.connect(lambda:self.install(old_loc1=None))
+        self.frrefresh.clicked.connect(lambda:self.install(old_loc1=None))
 
         self.installmenu = RoundMenu(parent=self.installbtn)
         self.installmenu.addAction(Action(FIF.DOWNLOAD, 'Version 1 (recommended)', triggered=lambda:Thread(target=lambda:self.download_old(version=1)).start()))
@@ -110,15 +151,22 @@ class Window(QDialog):
         self.new_radio.clicked.connect(lambda:self.select(None))
         self.installbtn.clicked.connect(lambda:self.install(old_loc1=None))
         self.ogback.clicked.connect(lambda:self.stackedwid.setCurrentWidget(self.home))
+        self.frback.clicked.connect(lambda:self.stackedwid.setCurrentWidget(self.home))
         self.oldlocchange.clicked.connect(lambda:self.changelocation(ver="Original Game"))
+        self.frchange.clicked.connect(lambda:self.changelocation())
         self.oldinstall.clicked.connect(lambda:self.installmenu.exec(QPoint(int(str(self.pos()).replace("PyQt5.QtCore.QPoint(","").replace(")","").replace(" ","").split(",")[0])+10,int(str(self.pos()).replace("PyQt5.QtCore.QPoint(","").replace(")","").replace(" ","").split(",")[1])+335), aniType=MenuAnimationType.DROP_DOWN))
+        self.frinstall.clicked.connect(lambda:Thread(target=lambda:self.download_new()).start())
 
         
     def changelocation(self,ver="Furious racing"):
         self.fname = QFileDialog.getExistingDirectory(self, f'{ver} Folder', 
         'c:\\')
         if ver=="Furious racing":
-            pass 
+            if self.fname != "":
+                self.frloc.setText(str(self.fname))
+                self.install(new_loc1=str(self.fname))
+            else:
+                self.install()
         else: 
             if self.fname != "":
                 self.oldloc.setText(str(self.fname))
@@ -126,39 +174,66 @@ class Window(QDialog):
             else:
                 self.install()
 
-    def install(self,old_loc1=None):            
+
+    def install(self,old_loc1=None, new_loc1=None):
         if self.new_radio.isChecked():
-            pass
+            if new_loc1==None:
+                self.stackedwid.setCurrentWidget(self.page)
+                self.frloc.setText(load_new_dir()[0])
+                if load_new_dir()[1] == True: 
+                    self.frinstall_2.setText("Hack installed:    True")
+                else: 
+                    self.frinstall_2.setText("Hack installed:    False")
+            else:
+                self.stackedwid.setCurrentWidget(self.page)
+                self.frloc.setText(load_new_dir(new_loc1)[0])
+                if load_new_dir(new_loc1)[1] == True: 
+                    self.frinstall_2.setText("Hack installed:    True")
+                else: 
+                    self.frinstall_2.setText("Hack installed:    False")
         elif self.old_radio.isChecked():
             if old_loc1==None:
-                self.stackedwid.setCurrentWidget(self.originalpage)
-                self.oldloc.setText(f"{load_old_dir()[0]}")
-                if load_old_dir()[1] == True: 
-                    self.oldver.setText(f"Version:     Multi Beta")
-                    self.update.setVisible(False)
-
-                    
-                else: 
+                if load_old_dir() != None:
+                    self.stackedwid.setCurrentWidget(self.originalpage)
                     self.oldloc.setText(f"{load_old_dir()[0]}")
-                    self.oldver.setText(f"Version:     Wrong version")
-                    self.update.setVisible(True)
-                if load_old_dir()[2] == True:
-                     if len(self.installmenu.actions()) == 2:
-                        self.installmenu.addAction(Action(FIF.QUESTION, 'How to uninstall', triggered=lambda:open_url("https://github.com/Jake4353/GarfClientInstaller/blob/main/README.md#how-to-uninstall")))
-                else:  
-                    try:
-                        self.installmenu.removeAction(self.installmenu.actions()[2])
-                    except:pass
-                if load_old_dir()[2] == False:
-                    self.oldinstalled.setText(f"Hack installed: False")
-                    self.oldinstall.setText("Install")
+                    if load_old_dir()[1] == True: 
+                        self.oldver.setText(f"Version:     Multi Beta")
+                        self.update.setVisible(False)
 
+                        
+                    else: 
+                        self.oldloc.setText(f"{load_old_dir()[0]}")
+                        self.oldver.setText(f"Version:     Wrong version")
+                        self.update.setVisible(True)
+                    if load_old_dir()[2] == True:
+                         if len(self.installmenu.actions()) == 2:
+                            self.installmenu.addAction(Action(FIF.QUESTION, 'How to uninstall', triggered=lambda:open_url("https://github.com/Jake4353/GarfClientInstaller/blob/main/README.md#how-to-uninstall")))
+                    else:  
+                        try:
+                            self.installmenu.removeAction(self.installmenu.actions()[2])
+                        except:pass
+                    if load_old_dir()[2] == False:
+                        self.oldinstalled.setText(f"Hack installed: False")
+                        self.oldinstall.setText("Install")
+
+                    else:
+                        if load_old_dir()[3] == 1:
+                            self.oldinstalled.setText(f"Hack installed: V1")   
+                        elif load_old_dir()[3] == 2:
+                            self.oldinstalled.setText(f"Hack installed: V2")
+                        self.oldinstall.setText("Reinstall")
                 else:
-                    if load_old_dir()[3] == 1:
-                        self.oldinstalled.setText(f"Hack installed: V1")   
-                    elif load_old_dir()[3] == 2:
-                        self.oldinstalled.setText(f"Hack installed: V2")
-                    self.oldinstall.setText("Reinstall")
+                    self.stackedwid.setCurrentWidget(self.originalpage)
+                    TeachingTip.create(
+                    target=self.title_2,
+                    icon=InfoBarIcon.ERROR,
+                    title='Error',
+                    content="Game not found",
+                    isClosable=True,
+                    tailPosition=TeachingTipTailPosition.TOP,
+                    duration=3000,
+                    parent=self
+                )
             else:
                 self.stackedwid.setCurrentWidget(self.originalpage)
                 self.oldloc.setText(f"{load_old_dir(loc=self.fname)[0]}")
@@ -224,22 +299,79 @@ class Window(QDialog):
         self.oldprog.setMaximum(2)
         self.oldprog.setValue(1)
         sleep(0.5)
-        if self.oldloc.text() == load_old_dir()[0]:
-            print(rf"moving '{getcwd()}\old\Assembly-CSharp.dll' to '{load_old_dir()[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll'")
-            shutil.move(rf"{getcwd()}\old\Assembly-CSharp.dll", rf"{load_old_dir()[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll")
-            self.oldprog.setValue(2)
-            self.oldinfo.setText("Hack installed")
-            print('complete')
-            self.oldprog.setValue(0)
-            self.install()
-        else:
-            print(rf"moving '{getcwd()}\old\Assembly-CSharp.dll' to '{load_old_dir(loc=self.oldloc.text())[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll'")
+        try:
+            if self.oldloc.text() == load_old_dir()[0]:
+                print(rf"moving '{getcwd()}\old\Assembly-CSharp.dll' to '{load_old_dir()[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll'")
+                shutil.move(rf"{getcwd()}\old\Assembly-CSharp.dll", rf"{load_old_dir()[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll")
+                self.oldprog.setValue(2)
+                self.oldinfo.setText("Hack installed")
+                print('complete')
+                self.oldprog.setValue(0)
+                self.install()
+            else:
+                print(rf"moving '{getcwd()}\old\Assembly-CSharp.dll' to '{load_old_dir(loc=self.oldloc.text())[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll'")
+                shutil.move(rf"{getcwd()}\old\Assembly-CSharp.dll", rf"{load_old_dir(loc=self.oldloc.text())[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll")
+                self.oldprog.setValue(2)
+                self.oldinfo.setText("Hack installed")
+                print('complete')
+                self.oldprog.setValue(0)
+                self.install(old_loc1=self.oldloc.text())
+        except:
+
+            # print(rf"moving '{getcwd()}\old\Assembly-CSharp.dll' to '{load_old_dir(loc=self.oldloc.text())[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll'")
             shutil.move(rf"{getcwd()}\old\Assembly-CSharp.dll", rf"{load_old_dir(loc=self.oldloc.text())[0]}/Garfield_Master7_Data/Managed/Assembly-CSharp.dll")
             self.oldprog.setValue(2)
             self.oldinfo.setText("Hack installed")
             print('complete')
             self.oldprog.setValue(0)
             self.install(old_loc1=self.oldloc.text())
+
+    def download_new(self):
+
+        if path1.exists(rf"{getcwd()}\new\Assembly-CSharp.dll"):
+            remove(rf"{getcwd()}\new\Assembly-CSharp.dll")
+        self.frinfo.setText("Downloading")
+        hackurl = "https://raw.githubusercontent.com/Jake4353/GarfClientInstaller/main/downloads/latest/furious/Assembly-CSharp.dll"
+
+        r = get(hackurl, stream=True)
+
+        # Estimates the number of bar updates
+        block_size = 10240
+        file_size = int(r.headers.get('Content-Length', None))
+        num_bars = np.ceil(file_size / (1 * block_size))
+        self.frprog.setMaximum(int(str(num_bars).split('.')[0]))
+        if path1.exists(rf"{getcwd()}\new"):
+            pass 
+        else: makedirs(rf"{getcwd()}\new")
+        with open('new/Assembly-CSharp.dll', 'wb') as f:
+            for i, chunk in enumerate(r.iter_content(chunk_size=1 * block_size)):
+                f.write(chunk)
+                try:
+                    self.frprog.setValue(i+1)
+                except:pass
+                # Add a little sleep so you can see the bar progress
+                sleep(0.05) 
+        self.frinfo.setText("installing")
+        self.frprog.setValue(0)
+        self.frprog.setMaximum(2)
+        self.frprog.setValue(1)
+        sleep(0.5)
+        if self.frloc.text() == load_new_dir()[0]:
+            shutil.move(rf"{getcwd()}\new\Assembly-CSharp.dll", rf"{load_new_dir()[0]}/Garfield Kart Furious Racing_Data/Managed/Assembly-CSharp.dll")
+            self.frprog.setValue(2)
+            self.frinfo.setText("Hack installed")
+            print('complete')
+            self.frprog.setValue(0)
+            self.install()
+        else:
+            print(rf"{load_new_dir(loc=self.frloc.text())[0]}/Garfield Kart Furious Racing_Data/Managed/Assembly-CSharp.dll")
+            print(f'{load_new_dir(loc=self.frloc.text())}')
+            shutil.move(rf"{getcwd()}\new\Assembly-CSharp.dll", rf"{load_new_dir(loc=self.frloc.text())[0]}/Garfield Kart Furious Racing_Data/Managed/Assembly-CSharp.dll")
+            self.frprog.setValue(2)
+            self.frinfo.setText("Hack installed")
+            print('complete')
+            self.frprog.setValue(0)
+            self.install(new_loc1=self.frloc.text())
 
 
 
